@@ -1,5 +1,7 @@
 const express = require("express");
 
+const HttpError = require("../models/http-error");
+
 const router = express.Router();
 
 const DUMMY_PLACES = [
@@ -23,9 +25,7 @@ router.get("/:pid", (req, res, next) => {
   });
 
   if (!place) {
-    const error = new Error("Could not fint place for the provided pID");
-    error.code = 404;
-    throw error; // will trigger error handling middleware
+    throw new HttpError("Could not fint place for the provided pID", 404); // will trigger error handling middleware
   }
   res.json({ place: place });
 });
@@ -36,9 +36,9 @@ router.get("/user/:uid", (req, res, next) => {
     return p.creator === userId;
   });
   if (!place) {
-    const error = new Error("Could not fint place for the provided uID");
-    error.code = 404;
-    return next(error);
+    return next(
+      new HttpError("Could not fint place for the provided uID", 404)
+    );
   }
   res.json({ place: place });
 });
